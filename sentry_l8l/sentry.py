@@ -53,7 +53,10 @@ class TracesSampler:
         self.default_sampling_rate = float(default_sampling_rate)
 
     def __call__(self, sampling_context):
-        if sampling_context["wsgi_environ"]["PATH_INFO"] in ["/api/bugs/", "/api/is-alive/"]:
+        if "wsgi_environ" in sampling_context and sampling_context["wsgi_environ"]["PATH_INFO"] in [
+            "/api/bugs/",
+            "/api/is-alive/",
+        ]:
             return self.default_sampling_rate * self.default_sampling_rate
         else:
             return self.default_sampling_rate
