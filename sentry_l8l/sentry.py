@@ -1,8 +1,10 @@
 import os
 from json import decoder
+from warnings import warn
 
 import requests
 import sentry_sdk
+from django.conf import settings
 from django.http import request
 from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -53,6 +55,14 @@ def sentry_tunnel(request: request.HttpRequest):
 class TracesSampler:
     def __init__(self, default_sampling_rate=1.0):
         self.default_sampling_rate = float(default_sampling_rate)
+        if not hasattr(settings, "SENTRY_L8L_IGNORE_PATHS"):
+            warn(
+                (
+                    "The /api/is-alive/ path is not down-sampled by default anymore."
+                    "Use SENTRY_L8L_IGNORE_PATHS to ignore it completely."
+                ),
+                DeprecationWarning,
+            )
 
     def __call__(self, sampling_context):
         if (
