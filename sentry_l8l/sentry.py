@@ -62,9 +62,18 @@ class TracesSampler:
                 DeprecationWarning,
             )
         self.ignore_paths = getattr(settings, "SENTRY_L8L_IGNORE_PATHS", ["/api/bugs/"])
+        self.ignore_celery_tasks = getattr(settings, "SENTRY_L8L_IGNORE_CELERY_TASKS", [])
 
     def __call__(self, sampling_context):
-        if "wsgi_environ" in sampling_context and sampling_context["wsgi_environ"]["PATH_INFO"] in self.ignore_paths:
+        if (
+            "wsgi_environ" in sampling_context
+            and sampling_context["wsgi_environ"].get("PATH_INFO", None) in self.ignore_paths
+        ):
+            return 0
+        elif (
+            "celery_job" in sampling_context
+            and sampling_context["celery_job"].get("task", None) in self.ignore_celery_tasks
+        ):
             return 0
         else:
             return self.default_sampling_rate
