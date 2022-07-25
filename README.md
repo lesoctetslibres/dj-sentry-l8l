@@ -8,7 +8,7 @@
    pip install "dj-sentry-l8l @ git+https://github.com/lesoctetslibres/dj-sentry-l8l.git@master"
    ```
 
-2. Configuring Configuration is only possible via environment variables:
+2. Sentry Configuration is only possible via environment variables:
 
    - `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE` are read directly by
      sentry-sdk
@@ -36,3 +36,10 @@
 
    WARNING: the DSN of the frontend must be the same as the one configured for
    the backend (SENTRY_DSN)
+
+4. Configure optional settings:
+
+   - `SENTRY_L8L_IGNORE_PATHS = ["/api/bugs/", "/api/path-to-ignore/]`
+     Hint: the values to put in this setting are the transaction names as displayed in sentry.
+   - `SENTRY_L8L_IGNORE_CELERY_TASKS = ["my_project.celery.task_to_ignore"]`
+     Hint: the values to put in this setting are the transaction names as displayed in sentry.
