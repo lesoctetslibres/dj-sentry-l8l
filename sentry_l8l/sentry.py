@@ -10,6 +10,8 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import ignore_logger
 from urllib3.util import parse_url
 
+from . import app_settings
+
 
 #   deepcode ignore DisablesCSRFProtection: Sentry proxy, no action performed
 @csrf_exempt
@@ -53,11 +55,11 @@ class TracesSampler:
         self.default_sampling_rate = float(default_sampling_rate)
 
     def __call__(self, sampling_context):
-        if "wsgi_environ" in sampling_context and sampling_context["wsgi_environ"]["PATH_INFO"] in [
-            "/api/bugs/",
-            "/api/is-alive/",
-        ]:
-            return self.default_sampling_rate * self.default_sampling_rate
+        if (
+            "wsgi_environ" in sampling_context
+            and sampling_context["wsgi_environ"]["PATH_INFO"] in app_settings.IGNORE_PATHS
+        ):
+            return 0
         else:
             return self.default_sampling_rate
 
